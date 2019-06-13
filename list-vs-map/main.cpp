@@ -91,13 +91,13 @@ double bench(int size, const F& target) {
 	return sum / result.size();
 }
 
-void compare(int sampleSize) {
+template<class F>
+void compare(int sampleSize, F target) {
 	std::cout << "Testing sample size: " << sampleSize << "\n";
-	auto target = LONG_STRING + std::to_string(5000);
-	auto avgTimeVector = bench<std::vector<std::string>>(sampleSize, target);
+	auto avgTimeVector = bench<std::vector<F>>(sampleSize, target);
 	std::cout << "Vector version took: " << avgTimeVector << "\n";
 
-	auto avgTimeMap = bench<std::map<std::string, bool>>(sampleSize, target);
+	auto avgTimeMap = bench<std::map<F, bool>>(sampleSize, target);
 	std::cout << "Map version took: " << avgTimeMap << "\n";
 
 	if (avgTimeVector > avgTimeMap) {
@@ -112,8 +112,15 @@ void compare(int sampleSize) {
 
 
 int main() {
+	std::cout << "Comparing list of string to map of strings...\n";
+	auto stringTarget = LONG_STRING + std::to_string(5000);
 	for (int i = 10; i <= 1000000; i *= 10) {
-		compare(i);
+		compare(i, stringTarget);
+	}
+	std::cout << "Comparing list of string to map of int64...\n";
+	auto intTarget = std::int64_t(-1);
+	for (int i = 10; i <= 1000000; i *= 10) {
+		compare(i, intTarget);
 	}
 	return 0;
 }
